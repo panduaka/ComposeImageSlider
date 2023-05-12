@@ -1,7 +1,7 @@
+@file:OptIn(ExperimentalFoundationApi::class, ExperimentalFoundationApi::class)
+
 package com.example.imageslider
 
-import android.graphics.drawable.Icon
-import android.graphics.pdf.PdfDocument.Page
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,93 +42,99 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val animals = listOf(
-            R.drawable.ic_launcher_foreground, R.drawable.ic_launcher_background
+        val animals: List<Int> = listOf(
+            R.drawable.chetah,
+            R.drawable.monkey,
+            R.drawable.horse,
+            R.drawable.fox
         )
         setContent {
             ImageSliderTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = Color.Transparent
                 ) {
-//                    Greeting("Android")
-                    val pagerState = rememberPagerState()
-                    val scope = rememberCoroutineScope()
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        HorizontalPager(
-                            pageCount = animals.size,
-                            state = pagerState,
-                            key = { animals[it] },
-                            pageSize = PageSize.Fill
-//                            pageSize = PageSize.Fixed(300.dp)
-                        ) { index ->
-                            Image(
-                                painter = painterResource(id = animals[index]),
-                                contentDescription = null,
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .offset(y = -(16).dp)
-                                .fillMaxWidth(0.5f)
-                                .clip(
-                                    RoundedCornerShape(100)
-                                )
-                                .padding(8.dp)
-                                .align(Alignment.BottomCenter),
-
-                            ) {
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(
-                                            pagerState.currentPage - 1
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.align(Alignment.CenterEnd)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowRight,
-                                    contentDescription = "Go Forward"
-                                )
-                            }
-                            IconButton(
-                                onClick = {
-                                    scope.launch {
-                                        pagerState.animateScrollToPage(
-                                            pagerState.currentPage + 1
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.align(Alignment.CenterStart)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.KeyboardArrowLeft,
-                                    contentDescription = "Go Back"
-                                )
-                            }
-                        }
-                    }
+                    AnimalsPager(animals = animals)
                 }
             }
         }
     }
 }
 
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!", modifier = modifier
-    )
+fun AnimalsPager(animals: List<Int>) {
+    val pagerState = rememberPagerState()
+    val scope = rememberCoroutineScope()
+    Box(modifier = Modifier.fillMaxSize()) {
+        HorizontalPager(
+            pageCount = animals.size,
+            state = pagerState,
+            key = { animals[it] },
+            pageSize = PageSize.Fill
+        ) { index ->
+            Image(
+                painter = painterResource(id = animals[index]),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        Box(
+            modifier = Modifier
+                .offset(y = -(16).dp)
+                .fillMaxWidth(0.5f)
+                .clip(
+                    RoundedCornerShape(100)
+                )
+                .padding(8.dp)
+                .align(Alignment.BottomCenter),
+
+            ) {
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage - 1
+                        )
+                    }
+                },
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = "Go Forward"
+                )
+            }
+            IconButton(
+                onClick = {
+                    scope.launch {
+                        pagerState.animateScrollToPage(
+                            pagerState.currentPage + 1
+                        )
+                    }
+                },
+                modifier = Modifier.align(Alignment.CenterStart)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowLeft,
+                    contentDescription = "Go Back"
+                )
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    ImageSliderTheme {
-        Greeting("Android")
-    }
+fun AnimalsPagerPreview() {
+    AnimalsPager(
+        animals = listOf(
+            R.drawable.chetah,
+            R.drawable.monkey,
+            R.drawable.horse,
+            R.drawable.fox
+        )
+    )
 }
